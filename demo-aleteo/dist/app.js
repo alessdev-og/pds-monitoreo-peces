@@ -23,7 +23,8 @@ function stopStream() {
   video.removeAttribute('src'); video.load();
 }
 function resetData(keepMarkers = false) {
-  state.visual = []; state.sensor = []; state.visualResult = null; state.sensorResult = null;
+  state.visual = []; state.sensor = []; state.visualResult = null;
+  state.sensorResult = state.imported ? analyze(state.imported) : null;
   state.t = 0; state.sample = 0; state.startMedia = null; state.lastMedia = -1; state.lost = false;
   state.rng = seededNoise(20261106); state.sensorRng = seededNoise(20261107);
   if (!keepMarkers) { tracker.reset(); state.quality = null; }
