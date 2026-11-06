@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102d35">
+  <meta name="description" content="Laboratorio académico de señales de batido de cola. Simulación y seguimiento visual asistido, con filtrado FIR y FFT.">
+  <title>Aleta · Laboratorio de señales</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23102d35'/%3E%3Cpath d='M12 33q16-23 34 0Q28 53 12 33m34 0 9-10v20Z' fill='%236be1c2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" aria-label="Aleta, inicio"><svg viewBox="0 0 40 32" aria-hidden="true"><path d="M3 16Q16-4 29 16Q16 35 3 16Z M29 16 39 6V26Z" fill="currentColor"/><circle cx="11" cy="14" r="1.5" fill="#102d35"/></svg><span>aleta<span class="brand-dot">.</span></span></a>
+  <div class="top-caption">LABORATORIO DE SEÑALES <span>/ PDS</span></div>
+  <a class="top-link" href="#metodo">Cómo se mide <span aria-hidden="true">↗</span></a>
+</header>
+<main>
+  <section class="intro">
+    <div><div class="eyebrow"><span class="small-dot"></span> PROTOTIPO ACADÉMICO · EQUIPO 2</div><h1>El movimiento,<br class="mobile-break"> convertido en señal.</h1><p>Explora el batido de cola, filtra sus oscilaciones y encuentra su frecuencia.</p></div>
+    <div class="intro-tag"><svg viewBox="0 0 60 25" aria-hidden="true"><path d="M0 13h9l5-10 8 22L32 0l8 20 6-7h14"/></svg><span>Observar. Medir. Comparar.</span></div>
+  </section>
+  <div class="toolbar">
+    <div class="mode-tabs" role="group" aria-label="Origen de la imagen">
+      <button id="mode-demo" class="active" aria-pressed="true">01 <span>Simulación</span></button>
+      <button id="mode-camera" aria-pressed="false">02 <span>Cámara</span></button>
+      <button id="mode-video" aria-pressed="false">03 <span>Mi video</span></button>
+    </div>
+    <div class="session-actions"><button id="reset" class="button ghost">↺ <span>Reiniciar</span></button><button id="toggle" class="button primary">Ⅱ Pausar</button></div>
+  </div>
+  <div id="notice" class="notice" role="status"><span class="notice-icon">i</span><span id="notice-text">Modo demostración: el pez y ambos canales son simulados. No hay sensor físico conectado.</span></div>
+  <section class="workspace">
+    <article class="panel observation">
+      <div class="panel-head"><div><span class="section-number">01 /</span> Observación</div><span id="source-badge" class="badge amber">IMAGEN SIMULADA</span></div>
+      <div class="stage" id="stage">
+        <video id="video" playsinline muted preload="metadata" hidden></video>
+        <canvas id="scene" width="800" height="450" aria-label="Visualización del pez y puntos de seguimiento"></canvas>
+        <div class="stage-label"><span id="live-dot" class="live-dot"></span><span id="stage-label">Modelo ilustrativo · sin especie asignada</span></div>
+        <div class="stage-bottom"><span id="tracking-state">Ángulo de cola respecto al cuerpo</span><span id="timecode">00:00.0</span></div>
+        <div id="empty-stage" class="empty-stage" hidden><div class="empty-symbol">◎</div><strong id="empty-title">Elige un video de tu pecera</strong><span>Las imágenes se procesan en este dispositivo.</span></div>
+      </div>
+      <div class="stage-controls">
+        <div class="legend"><span><i class="dot mint"></i>Cabeza</span><span><i class="dot blue"></i>Cuerpo</span><span><i class="dot coral"></i>Cola</span></div>
+        <span id="quality-label" class="muted">Señal sintética reproducible</span>
+      </div>
+      <div id="real-controls" class="real-controls" hidden>
+        <div class="capture-actions"><button id="camera-start" class="button primary" hidden>Activar cámara trasera</button><label id="video-label" class="button primary" for="video-file" hidden>Elegir video</label><input id="video-file" type="file" accept="video/*" hidden><button id="fixture" class="button ghost" hidden>Clip de prueba</button><button id="mark" class="button ghost" disabled>Marcar 3 puntos</button></div>
+        <p id="mark-help">Selecciona un video o activa la cámara. Después marca cabeza, cuerpo y base visible de la cola.</p>
+        <div class="video-scrub" id="video-scrub" hidden><span id="seek-label">0.0 s</span><input id="seek" aria-label="Posición del video" type="range" min="0" max="1" step="0.01" value="0"></div>
+      </div>
+    </article>
+    <aside class="readout">
+      <article class="panel metric-feature"><div class="metric-label"><span class="small-dot"></span> FRECUENCIA VISUAL</div><div class="big-number"><span id="visual-frequency">—</span><small>Hz</small></div><p id="visual-detail">Reuniendo al menos 2 segundos…</p><div class="mini-divider"></div><div class="metric-bottom"><span>Amplitud espectral estimada</span><strong id="amplitude">— °</strong></div></article>
+      <div class="metric-pair"><article class="panel small-metric"><span id="sensor-metric-label">Sensor simulado</span><strong><span id="sensor-frequency">—</span> <small>Hz</small></strong><span id="sensor-detail">Sin adquisición física</span></article><article class="panel small-metric"><span>Diferencia de frecuencia</span><strong><span id="difference">—</span> <small>Hz</small></strong><span id="comparison-detail">Comparación educativa</span></article></div>
+      <article class="panel status-card"><span class="status-icon">◇</span><div><strong>Medición, antes que clasificación.</strong><p>La frecuencia de cola no determina por sí sola si un pez está listo para producción.</p></div></article>
+    </aside>
+  </section>
+  <section id="simulation-controls" class="panel parameters">
+    <div class="parameters-title"><span class="section-number">02 /</span><strong>Diseña la señal</strong><span>Parámetros ilustrativos, sin equivalencia con tamaño o fuerza.</span></div>
+    <div class="sliders">
+      <label>Batido de cola <output id="frequency-value">2.4 Hz</output><input id="frequency" type="range" min="0.6" max="7" step="0.1" value="2.4"></label>
+      <label>Amplitud angular <output id="amplitude-value">18°</output><input id="angle-amplitude" type="range" min="5" max="35" step="1" value="18"></label>
+      <label>Ruido de medición <output id="noise-value">20%</output><input id="noise" type="range" min="0" max="80" step="5" value="20"></label>
+      <label>Desajuste del sensor <output id="offset-value">0.0 Hz</output><input id="sensor-offset" type="range" min="-0.4" max="0.4" step="0.1" value="0"></label>
+    </div>
+  </section>
+  <section class="plots">
+    <article class="panel"><div class="panel-head"><div><span class="section-number">03 /</span> Señal en el tiempo</div><span class="chart-unit">Ángulo [°]</span></div><div class="plot-legend"><span><i class="line original"></i>Original</span><span><i class="line filtered"></i>FIR suavizada</span></div><canvas id="time-chart" class="chart" aria-label="Señal angular original y filtrada frente al tiempo en segundos"></canvas><div class="chart-foot"><span id="sampling">Muestreo simulado · 60 Hz</span><span>Tiempo [s]</span></div></article>
+    <article class="panel"><div class="panel-head"><div><span class="section-number">04 /</span> Contenido frecuencial</div><span class="chart-unit">Amplitud [°]</span></div><div class="plot-legend"><span><i class="line filtered"></i>FFT de la señal original</span><span id="peak-label">Esperando registro</span></div><canvas id="fft-chart" class="chart" aria-label="Espectro de amplitud frente a frecuencia en hertz"></canvas><div class="chart-foot"><span id="resolution">Ventana de análisis: hasta 8 s</span><span>Frecuencia [Hz]</span></div></article>
+  </section>
+  <section class="bottom-grid">
+    <article class="panel external"><div class="panel-head"><div><span class="section-number">05 /</span> Canal físico · siguiente etapa</div><span id="sensor-badge" class="badge neutral">NO CONECTADO</span></div><p>Importa un registro independiente cuando tengan el sensor. El archivo se analiza localmente y no se sincroniza automáticamente con el video.</p><div class="import-row"><label class="button ghost" for="sensor-file">↑ Importar CSV del sensor</label><input id="sensor-file" type="file" accept=".csv,text/csv" hidden><code>t_s,value</code></div><p id="sensor-file-info" class="muted">Valores en unidades arbitrarias; requieren calibración para interpretarlos físicamente.</p></article>
+    <article class="panel export-panel"><span class="eyebrow">EVIDENCIA REPRODUCIBLE</span><h2>Llévate el registro.</h2><p>Muestras originales, señal filtrada y parámetros del análisis, con su procedencia.</p><div class="export-actions"><button id="export-csv" class="button primary">↓ Descargar CSV</button><button id="export-json" class="button ghost">↓ Informe JSON</button></div></article>
+  </section>
+  <section id="metodo" class="method"><div><span class="eyebrow">EL MÉTODO</span><h2>Una oscilación.<br>Una medición verificable.</h2><p>La pregunta inicial es cuánto y con qué frecuencia se mueve la cola. La aplicación no mide fuerza en newtons ni diagnostica salud o madurez productiva.</p></div><div class="method-steps"><div><span>01</span><p><strong>Adquirir</strong>Simulación a 60 Hz o tres puntos marcados por el usuario en cámara/video. El seguimiento por parches es experimental; revisa siempre la superposición.</p></div><div><span>02</span><p><strong>Procesar</strong>Ángulo relativo al cuerpo, remuestreo al intervalo mediano y FIR binomial de 5 coeficientes. Su retardo se compensa solo para visualizar. El remuestreo no sustituye un filtro antialias.</p></div><div><span>03</span><p><strong>Analizar</strong>FFT con eliminación de tendencia y ventana Hann, sobre hasta 8 s. Busca picos entre 0.3 y 12 Hz, limitados por el muestreo; el máximo espectral es un candidato que debe contrastarse con ciclos visibles.</p></div><div><span>04</span><p><strong>Contrastar</strong>Cuenta ciclos completos en el mismo intervalo del video. Un CSV independiente permite comparar frecuencias; no acredita sincronización ni permite inferir fuerza o tamaño.</p></div></div></section>
+  <footer><span class="footer-brand">aleta.</span><span>Procesamiento Digital de Señales · Equipo 2</span><a href="https://eurasip.org/Proceedings/Eusipco/Eusipco2018/papers/1570437333.pdf" target="_blank" rel="noopener">Referencia del método ↗</a></footer>
+</main>
+<div id="toast" class="toast" role="status" hidden></div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

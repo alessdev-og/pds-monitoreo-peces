@@ -9,7 +9,21 @@ grilla uniforme y aplica un FIR de cinco muestras, análisis de rapidez y FFT.
 La detección y el seguimiento automáticos y las clasificaciones de tamaño y
 actividad son etapas pendientes.
 
-## Notebook
+## Demo de batido de cola
+
+La nueva [demo Aleta](demo-aleteo/README.md) incorpora una interfaz para celular
+y computadora con simulación, cámara/video, seguimiento visual asistido de tres
+puntos, señal angular, FIR y FFT. Incluye un clip sintético de 2 Hz, exportación
+de registros e importación de CSV de un sensor independiente. La adquisición
+física sumergida y la validación con peces reales siguen pendientes. Esta demo
+no mide fuerza ni determina aptitud productiva. Su implementación es separada
+del notebook de trayectorias de referencia descrito a continuación.
+
+[Abrir la demo móvil](https://alessdev-og.github.io/pds-monitoreo-peces/demo/).
+Para actualizar la copia de GitHub Pages después de editar la demo, ejecutar
+`python3 tools/build_mobile_demo.py` y publicar los cambios de `docs/`.
+
+## Notebook de trayectorias CVAT
 
 [Abrir en Google Colab](https://colab.research.google.com/github/alessdev-og/pds-monitoreo-peces/blob/main/notebooks/05_06_Implementacion_PDS.ipynb)
 
